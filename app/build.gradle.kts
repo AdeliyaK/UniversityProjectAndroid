@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.code.gson:gson:2.8.9")
     implementation ("androidx.fragment:fragment:1.6.2") // или най-новата версия
     implementation ("androidx.activity:activity:1.8.2") // или най-новата версия
     implementation(libs.appcompat)
@@ -40,6 +41,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.messaging)
+    implementation(libs.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

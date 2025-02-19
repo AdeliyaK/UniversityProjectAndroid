@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String SERVER_URL = "http://192.168.1.4:8000/";
     private static final String URL_TOKEN = "register-token/";
 
+    static boolean b=false;
+
 
 
     @Override
@@ -58,17 +60,19 @@ public class MainActivity extends AppCompatActivity {
 
         requestNotificationPermission();
 
-
         email = findViewById(R.id.Name);
         password = findViewById(R.id.Password);
         rememberMe = findViewById(R.id.RememberMe);
         login = findViewById(R.id.buttonLogin);
 
         SharedPreferences preferences=getSharedPreferences("checkbox", MODE_PRIVATE);
-        String check=preferences.getString("rememberMe", "");
+        String check=preferences.getString("remember", "");
+
+
         if(check.equals("true")){
             Intent intent = new Intent(MainActivity.this, Schedule.class);
             startActivity(intent);
+
         }else if(check.equals("false")){
             Toast.makeText(getApplicationContext(), "Please Login", Toast.LENGTH_SHORT).show();
         }
@@ -84,39 +88,24 @@ public class MainActivity extends AppCompatActivity {
         rememberMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (buttonView.isChecked()) {
-                    SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = preferences.edit();
+                SharedPreferences.Editor editor = preferences.edit();
+
+                if (isChecked) {
                     editor.putString("remember", "true");
-                    editor.apply();
                     Toast.makeText(getApplicationContext(), "Checked", Toast.LENGTH_SHORT).show();
 
-                }else if(buttonView.isChecked()){
-                    SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = preferences.edit();
+                } else {
                     editor.putString("remember", "false");
-                    editor.apply();
                     Toast.makeText(getApplicationContext(), "Unchecked", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, preferences.getString("remember", ""));
                 }
+
+
+                editor.apply();
             }
         });
 
 
-        /*
-        autoCompleteTextView=findViewById(R.id.auto_complete_txt);
-        adapterItems=new ArrayAdapter<String>(this,R.layout.list_item);
-
-        autoCompleteTextView.setAdapter(adapterItems);
-        adapterItems.addAll(Days);
-
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),item, Toast.LENGTH_SHORT).show();
-            }
-        });
-    */
     }
 
     private void requestNotificationPermission() {
@@ -141,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                     // Вземи токена
                     String token = task.getResult();
                     Log.d(TAG, "FCM Token: " + token);
+
 
                     // Изпрати токена към сървъра
                     sendTokenToServer(token);
@@ -173,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                 os.close();
 
                 Log.d(TAG, "Token send request: " + json.toString());
-
                 // Четем отговора от сървъра
                 int responseCode = conn.getResponseCode();
                 InputStream is = (responseCode >= 200 && responseCode < 300) ? conn.getInputStream() : conn.getErrorStream();
